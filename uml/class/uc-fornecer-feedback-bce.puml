@@ -1,0 +1,42 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+interface IFornecerFeedback
+
+class TelaFeedback <<boundary>> { 
+  + exibir(chamadoId: int)
+  + enviar(dados) 
+}
+
+class ControleFeedback <<control>> { 
+  + registrarFeedback(usuarioId: int, chamadoId: int, dados): Feedback 
+}
+
+class Feedback <<entity>> {
+  - id:int
+  - chamadoId:int
+  - avaliacaoPrioridade:string
+  - notaAtendimento:int
+  - comentario:string
+  - data:datetime
+}
+
+interface IFeedbackRepository { 
+  + save(f: Feedback) 
+}
+
+interface IChamadoRepository { 
+  + findById(id: int): Chamado 
+}
+class Chamado <<entity>> { 
+  - id: int 
+  - titulo: string 
+  - status: string 
+}
+
+ControleFeedback ..|> IFornecerFeedback
+TelaFeedback --> ControleFeedback : enviar(dados)
+ControleFeedback ..> IChamadoRepository : findById()
+ControleFeedback ..> IFeedbackRepository : save()
+@enduml

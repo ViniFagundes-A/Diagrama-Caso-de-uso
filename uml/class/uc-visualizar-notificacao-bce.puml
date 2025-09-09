@@ -1,0 +1,35 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+interface IVisualizarNotificacoes
+
+class TelaNotificacoes <<boundary>> { 
+  + listar()
+  + marcarLida(id: int) 
+}
+
+class ControleNotificacao <<control>> { 
+  + listar(usuarioId: int): List<Notificacao>
+  + marcarLida(id: int) 
+}
+
+class Notificacao <<entity>> {
+  - id:int
+  - usuarioId:int
+  - mensagem:string
+  - tipo:string
+  - lida:boolean
+  - data:datetime
+  + marcarComoLida()
+}
+
+interface INotificacaoRepository {
+  + findByUsuario(usuarioId: int): List<Notificacao>
+  + save(n: Notificacao)
+}
+
+ControleNotificacao ..|> IVisualizarNotificacoes
+TelaNotificacoes --> ControleNotificacao : listar()/marcarLida()
+ControleNotificacao ..> INotificacaoRepository
+@enduml

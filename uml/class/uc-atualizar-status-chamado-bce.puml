@@ -1,0 +1,41 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+interface IAtualizarStatusChamado
+
+class TelaAtualizacaoStatus <<boundary>> { 
+  + alterar(chamadoId: int, novoStatus: string) 
+}
+
+class ControleAtualizacaoStatus <<control>> { 
+  + atualizar(chamadoId: int, novoStatus: string) 
+}
+
+class Chamado <<entity>> { 
+  - id: int 
+  - status: string 
+  + atualizarStatus(novoStatus: string) 
+}
+
+class Historico <<entity>> { 
+  - id: int 
+  - data: datetime 
+  - acao: string 
+  - detalhes: string 
+}
+
+interface IChamadoRepository { 
+  + findById(id: int): Chamado 
+  + save(c: Chamado) 
+}
+
+interface IHistoricoRepository { 
+  + registrar(chamadoId: int, acao: string, detalhes: string) 
+}
+
+ControleAtualizacaoStatus ..|> IAtualizarStatusChamado
+TelaAtualizacaoStatus --> ControleAtualizacaoStatus : alterar()
+ControleAtualizacaoStatus ..> IChamadoRepository : findById()/save()
+ControleAtualizacaoStatus ..> IHistoricoRepository : registrar("Atualização de status")
+@enduml

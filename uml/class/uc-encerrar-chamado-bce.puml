@@ -1,0 +1,44 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+interface IEncerrarChamado
+
+class TelaFechamentoChamado <<boundary>> { 
+  + exibir(chamadoId: int)
+  + confirmar(justificativa: string) 
+}
+
+class ControleFechamentoChamado <<control>> { 
+  + encerrar(chamadoId: int, justificativa: string): void 
+}
+
+class Chamado <<entity>> {
+  - id:int
+  - status:string
+  - dataFechamento:datetime
+  + fechar(justificativa:string)
+}
+
+class Historico <<entity>> { 
+  - id: int 
+  - data: datetime 
+  - acao: string 
+  - detalhes: string 
+}
+
+interface IChamadoRepository { 
+  + findById(id: int): Chamado 
+  + save(c: Chamado) 
+}
+
+interface IHistoricoRepository { 
+  + registrar(chamadoId: int, acao: string, detalhes: string) 
+}
+
+ControleFechamentoChamado ..|> IEncerrarChamado
+TelaFechamentoChamado --> ControleFechamentoChamado : confirmar()
+ControleFechamentoChamado ..> IChamadoRepository : findById()/save()
+ControleFechamentoChamado ..> Chamado : fechar()
+ControleFechamentoChamado ..> IHistoricoRepository : registrar("Fechamento")
+@enduml

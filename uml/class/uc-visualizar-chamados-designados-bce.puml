@@ -1,0 +1,36 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+interface IVisualizarChamadosDesignados
+
+class TelaChamadosDesignados <<boundary>> { 
+  + listar() 
+}
+
+class ControleChamadosDesignados <<control>> { 
+  + listarPorTecnico(tecnicoId: int): List<Chamado> 
+}
+
+class Tecnico <<entity>> { 
+  - id: int 
+  - nome: string 
+  - especialidade: string 
+}
+
+class Chamado <<entity>> { 
+  - id: int 
+  - titulo: string 
+  - status: string 
+  - prioridade: string 
+}
+
+interface IChamadoRepository { 
+  + findByTecnico(tecnicoId: int): List<Chamado> 
+}
+
+ControleChamadosDesignados ..|> IVisualizarChamadosDesignados
+TelaChamadosDesignados --> ControleChamadosDesignados : listar()
+ControleChamadosDesignados ..> IChamadoRepository : findByTecnico()
+Tecnico "1" -- "0..*" Chamado : designado
+@enduml

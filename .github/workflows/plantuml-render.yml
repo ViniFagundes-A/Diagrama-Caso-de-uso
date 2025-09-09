@@ -1,0 +1,55 @@
+name: Render PlantUML Diagrams
+
+on:
+  push:
+    branches: [ main, master ]
+    paths: 
+      - 'uml/**/*.puml'
+  pull_request:
+    branches: [ main, master ]
+    paths: 
+      - 'uml/**/*.puml'
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+        
+    - name: Download PlantUML
+      run: |
+        wget -O plantuml.jar https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar
+        
+    - name: Render PlantUML diagrams
+      run: |
+        find uml -name "*.puml" -type f | while read file; do
+          echo "Processing $file..."
+          dir=$(dirname "$file")
+          base=$(basename "$file" .puml)
+          
+          # Generate PNG
+          java -jar plantuml.jar -tpng "$file" -o "$(pwd)/$dir"
+          
+          # Generate SVG
+          java -jar plantuml.jar -tsvg "$file" -o "$(pwd)/$dir"
+          
+          echo "Generated $dir/$base.png and $dir/$base.svg"
+        done
+        
+    - name: Commit and push generated images
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add uml/**/*.png uml/**/*.svg
+        git diff --staged --quiet || git commit -m "Auto-generate PlantUML diagrams [skip ci]"
+        git push

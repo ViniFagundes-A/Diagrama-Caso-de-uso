@@ -1,0 +1,31 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+interface IConsultarHistoricoChamado
+
+class TelaHistoricoChamado <<boundary>> { 
+  + consultar(chamadoId: int) 
+}
+
+class ControleHistoricoChamado <<control>> { 
+  + consultar(chamadoId: int): List<Historico> 
+}
+
+class Historico <<entity>> {
+  - id:int
+  - chamadoId:int
+  - data:datetime
+  - acao:string
+  - detalhes:string
+  - usuarioId:int
+}
+
+interface IHistoricoRepository { 
+  + findByChamado(chamadoId: int): List<Historico> 
+}
+
+ControleHistoricoChamado ..|> IConsultarHistoricoChamado
+TelaHistoricoChamado --> ControleHistoricoChamado : consultar()
+ControleHistoricoChamado ..> IHistoricoRepository : findByChamado()
+@enduml

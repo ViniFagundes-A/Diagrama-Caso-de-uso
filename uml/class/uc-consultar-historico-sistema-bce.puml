@@ -1,0 +1,30 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+interface IConsultarHistoricoSistema
+
+class TelaHistoricoSistema <<boundary>> { 
+  + consultar(filtro) 
+}
+
+class ControleHistoricoSistema <<control>> { 
+  + consultar(filtro): List<EventoSistema> 
+}
+
+class EventoSistema <<entity>> {
+  - id:int
+  - data:datetime
+  - tipo:string
+  - usuarioId:int
+  - descricao:string
+}
+
+interface IEventoSistemaRepository { 
+  + findByFiltro(filtro): List<EventoSistema> 
+}
+
+ControleHistoricoSistema ..|> IConsultarHistoricoSistema
+TelaHistoricoSistema --> ControleHistoricoSistema : consultar()
+ControleHistoricoSistema ..> IEventoSistemaRepository : findByFiltro()
+@enduml
