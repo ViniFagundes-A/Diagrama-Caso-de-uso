@@ -1,0 +1,33 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+interface IConsultarChamados
+
+class TelaConsultaChamado <<boundary>> {
+  + exibirFiltro()
+  + consultar(filtro)
+  + apresentar(lista:List<Chamado>)
+}
+
+class ControleConsultaChamado <<control>> {
+  + consultarChamados(filtro, usuarioId: int): List<Chamado>
+}
+
+class Chamado <<entity>> {
+  - id:int
+  - titulo:string
+  - status:string
+  - prioridade:string
+  - dataAbertura:datetime
+}
+
+interface IChamadoRepository {
+  + findByUsuario(usuarioId: int): List<Chamado>
+  + findByFiltro(filtro): List<Chamado>
+}
+
+ControleConsultaChamado ..|> IConsultarChamados
+TelaConsultaChamado --> ControleConsultaChamado : consultar(filtro)
+ControleConsultaChamado ..> IChamadoRepository : findByUsuario()/findByFiltro()
+@enduml
